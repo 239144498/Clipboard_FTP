@@ -27,4 +27,5 @@ _创建起初是为了有效利用学校分配的 FTP 空间，虽然只给了 5
 如果你是学生并且学校分配了 FTP，就可以使用学校提供的 FTP 以此程序来实现剪贴板共享功能
 
 值得一提的是 IOS 设备使用的是 PythonIsta，你需要 pip install clipboard 模块
+
 而安卓使用的是QPython软件，需要用到 androidhelper 模块
