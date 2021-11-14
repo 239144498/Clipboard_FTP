@@ -1,0 +1,3 @@
+pyperclip==1.8.0
+pywin32==227
+# clipboard==0.0.4
