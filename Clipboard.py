@@ -12,8 +12,9 @@ import sys
 
 from ftplib import FTP
 from pathlib import Path
+from os import environ
 
-IP = "服务器ip"
+IP = "服务器ip"  # 例如：10.0.11.3
 PORT = 21
 USER = "账号"
 PWD = "密码"
@@ -65,7 +66,9 @@ elif 'ios' in sys.platform:
             return clipboard.get_image()
         else:
             return clipboard.get().encode('utf-8')
-elif 'linux' in sys.platform:
+elif 'ANDROID_STORAGE' in environ:
+    pass
+elif 'linux' == sys.platform:
     import pyperclip
 
 
@@ -128,9 +131,9 @@ def main():
     ftp = FtpClient(IP, PORT, USER, PWD)
     if len(sys.argv) > 1:
         data = sys.argv[1][:1].lower()
-        if data == 'p':     # 上传
+        if data == 'p':  # 上传
             ftp.uploadfile('Clipboard', paste())
-        elif data == 'g':   # 下载
+        elif data == 'g':  # 下载
             copy(ftp.downloadfile('Clipboard'))
         else:
             print("""
@@ -144,4 +147,7 @@ def main():
 
 
 if __name__ == '__main__':
+    #  功能    命令执行：
+    # 上传：Clipboard.py p
+    # 下载：Clipboard.py g
     main()
