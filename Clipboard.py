@@ -9,17 +9,17 @@
 import io
 import os
 import sys
+import platform
 
 from ftplib import FTP
 from pathlib import Path
-from os import environ
 
 IP = "服务器ip"  # 例如：10.0.11.3
 PORT = 21
 USER = "账号"
 PWD = "密码"
 
-if 'win' in sys.platform:
+if 'Windows' in platform.platform():
     import win32con
     import win32clipboard
 
@@ -67,7 +67,7 @@ elif 'ios' in sys.platform:
             return clipboard.get_image()
         else:
             return clipboard.get().encode('utf-8')
-elif 'ANDROID_STORAGE' in environ:
+elif 'ANDROID_STORAGE' in os.environ:
     import androidhelper as android
 
     ad = android.Android()
@@ -79,7 +79,17 @@ elif 'ANDROID_STORAGE' in environ:
 
     def paste():
         return ad.getClipboard().result
-elif 'linux' == sys.platform:
+elif 'Ubuntu' in platform.platform():
+    import pyperclip
+
+
+    def copy(data):
+        pyperclip.copy(data)
+
+
+    def paste():
+        return pyperclip.paste()
+elif 'macOS' in platform.platform():
     import pyperclip
 
 
