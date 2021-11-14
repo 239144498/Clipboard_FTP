@@ -20,34 +20,54 @@ USER = "账号"
 PWD = "密码"
 
 if 'win' in sys.platform:
-    import win32con
-    import win32clipboard
+    try:
+        import win32con
+        import win32clipboard
 
 
-    def copy(data):
-        """复制"""
-        win32clipboard.OpenClipboard()  # 打开剪贴板
-        win32clipboard.EmptyClipboard()  # 清空剪贴板内容。可以忽略这步操作，但是最好加上清除粘贴板这一步
-        if type(data) == str:
-            win32clipboard.SetClipboardData(win32con.CF_UNICODETEXT, data)  # 以Unicode文本形式放入剪切板
-        elif type(data) == bytes:
-            win32clipboard.SetClipboardData(win32con.CF_DIB, data)
-        else:
-            raise Exception("复制到剪贴板出错")
-        win32clipboard.CloseClipboard()  # 关闭剪贴板
+        def copy(data):
+            """复制"""
+            win32clipboard.OpenClipboard()  # 打开剪贴板
+            win32clipboard.EmptyClipboard()  # 清空剪贴板内容。可以忽略这步操作，但是最好加上清除粘贴板这一步
+            if type(data) == str:
+                win32clipboard.SetClipboardData(win32con.CF_UNICODETEXT, data)  # 以Unicode文本形式放入剪切板
+            elif type(data) == bytes:
+                win32clipboard.SetClipboardData(win32con.CF_DIB, data)
+            else:
+                raise Exception("复制到剪贴板出错")
+            win32clipboard.CloseClipboard()  # 关闭剪贴板
 
 
-    def paste():
-        """粘贴"""
-        win32clipboard.OpenClipboard()  # 打开剪贴板
-        if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):  # 图片
-            data = win32clipboard.GetClipboardData(win32con.CF_DIB)
-        elif win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_UNICODETEXT):  # 文本
-            data = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT).encode('utf-8')  # 读取剪切板内容，读取为Unicode文本形式
-        else:
-            data = None
-        win32clipboard.CloseClipboard()  # 关闭剪贴板
-        return data
+        def paste():
+            """粘贴"""
+            win32clipboard.OpenClipboard()  # 打开剪贴板
+            if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):  # 图片
+                data = win32clipboard.GetClipboardData(win32con.CF_DIB)
+            elif win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_UNICODETEXT):  # 文本
+                data = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT).encode(
+                    'utf-8')  # 读取剪切板内容，读取为Unicode文本形式
+            else:
+                data = None
+            win32clipboard.CloseClipboard()  # 关闭剪贴板
+            return data
+    except:
+        import clipboard
+
+
+        def copy(text):
+            """复制"""
+            if clipboard.get_image():
+                clipboard.set_image(text)
+            else:
+                clipboard.set(text)
+
+
+        def paste():
+            """粘贴"""
+            if clipboard.get_image():
+                return clipboard.get_image()
+            else:
+                return clipboard.get().encode('utf-8')
 elif 'ios' in sys.platform:
     import clipboard
 
@@ -67,7 +87,17 @@ elif 'ios' in sys.platform:
         else:
             return clipboard.get().encode('utf-8')
 elif 'ANDROID_STORAGE' in environ:
-    pass
+    import androidhelper as android
+
+    ad = android.Android()
+
+
+    def copy(data):
+        ad.setClipboard(data)
+
+
+    def paste():
+        return ad.getClipboard().result
 elif 'linux' == sys.platform:
     import pyperclip
 
